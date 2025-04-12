@@ -2,8 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { CustomField } from './custom-field.schema';
 
+export type CustomSchemaDocument = CustomSchema & Document;
+
 @Schema({ timestamps: true })
-export class CustomSchema extends Document {
+export class CustomSchema {
   @Prop({ type: Types.ObjectId, required: true })
   userId: Types.ObjectId;
 
