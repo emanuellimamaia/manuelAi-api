@@ -6,7 +6,11 @@ import { CustomSchemaModule } from './custom-schema/custom-schema.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+      cache: false,
+    }),
     MongooseModule.forRoot(process.env.MONGODB_URI),
     AuthModule,
     CustomSchemaModule,
