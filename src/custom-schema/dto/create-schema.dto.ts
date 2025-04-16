@@ -1,4 +1,4 @@
-import { IsString, IsArray, ValidateNested, IsOptional, IsEnum, IsObject } from 'class-validator';
+import { IsString, IsArray, ValidateNested, IsOptional, IsEnum, IsBoolean, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -9,7 +9,7 @@ export class CustomFieldOptionsDto {
     example: true
   })
   @IsOptional()
-  @IsObject()
+  @IsBoolean()
   required?: boolean;
 
   @ApiProperty({
@@ -18,7 +18,7 @@ export class CustomFieldOptionsDto {
     example: 0
   })
   @IsOptional()
-  @IsObject()
+  @IsNumber()
   min?: number;
 
   @ApiProperty({
@@ -27,7 +27,7 @@ export class CustomFieldOptionsDto {
     example: 100
   })
   @IsOptional()
-  @IsObject()
+  @IsNumber()
   max?: number;
 
   @ApiProperty({
@@ -36,7 +36,8 @@ export class CustomFieldOptionsDto {
     example: ['PENDING', 'ACTIVE', 'INACTIVE']
   })
   @IsOptional()
-  @IsObject()
+  @IsArray()
+  @IsString({ each: true })
   enum?: string[];
 
   [key: string]: any;

@@ -1,61 +1,31 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CustomSchema, CustomSchemaDocument } from '../database/schemas/custom-schema.schema';
-import { CustomData, CustomDataDocument } from '../database/schemas/custom-data.schema';
+import { CustomData, CustomDataDocument } from '../../../database/schemas/custom-data.schema';
+import { CustomSchemaService } from '../../../custom-schema/custom-schema.service';
+import { CustomSchemaDocument } from 'src/database/schemas';
 
 @Injectable()
-export class CustomSchemaService {
-  private readonly logger = new Logger(CustomSchemaService.name);
+export class CreateDataService {
+  private readonly logger = new Logger(CreateDataService.name);
 
   constructor(
-    @InjectModel(CustomSchema.name) private customSchemaModel: Model<CustomSchemaDocument>,
-    @InjectModel(CustomData.name) private customDataModel: Model<CustomDataDocument>
+    @InjectModel(CustomData.name) private customDataModel: Model<CustomDataDocument>,
+    private readonly customSchemaService: CustomSchemaService
   ) { }
-
-  async createSchema(userId: string, schemaData: any): Promise<CustomSchemaDocument> {
-    try {
-      this.logger.debug(`Creating schema for user ${userId}: ${JSON.stringify(schemaData)}`);
-
-      // Validar a estrutura do schema
-      this.validateSchemaStructure(schemaData);
-
-      // Criar o schema
-      const schema = await this.customSchemaModel.create({
-        userId,
-        name: schemaData.name,
-        fields: schemaData.fields
-      });
-
-      this.logger.debug(`Schema created successfully: ${schema._id}`);
-      return schema;
-    } catch (error) {
-      this.logger.error(`Error creating schema: ${error.message}`);
-      throw error;
-    }
-  }
-
-  async getSchemaById(schemaId: string): Promise<CustomSchemaDocument> {
-    const schema = await this.customSchemaModel.findById(schemaId);
-    if (!schema) {
-      throw new NotFoundException(`Schema with ID ${schemaId} not found`);
-    }
-    return schema;
-  }
-
-  async getUserSchemas(userId: string): Promise<CustomSchemaDocument[]> {
-    return this.customSchemaModel.find({ userId });
-  }
 
   async createData(schemaId: string, userId: string, data: any): Promise<CustomDataDocument> {
     try {
       // Buscar o schema
-      const schema = await this.getSchemaById(schemaId);
+      const schema = await this.customSchemaService.getSchemaById(schemaId);
 
-      this.logger.debug(`Creating data for schema ${schemaId}: ${JSON.stringify(data)}`);
+      // Verificar se data.data é undefined
+      if (!data.data) {
+        throw new BadRequestException('Data is required');
+      }
 
       // Validar os dados contra o schema
-      this.validateDataAgainstSchema(data.data, schema);
+      this.customSchemaService.validateDataAgainstSchema(data.data, schema);
 
       // Criar os dados
       const customData = await this.customDataModel.create({
@@ -65,26 +35,12 @@ export class CustomSchemaService {
         data: data.data
       });
 
-      this.logger.debug(`Data created successfully: ${customData._id}`);
       return customData;
     } catch (error) {
       this.logger.error(`Error creating data: ${error.message}`);
       throw error;
     }
   }
-
-  async getDataBySchemaId(schemaId: string, userId: string): Promise<CustomDataDocument[]> {
-    return this.customDataModel.find({ schemaId, userId });
-  }
-
-  async getDataById(dataId: string, userId: string): Promise<CustomDataDocument> {
-    const data = await this.customDataModel.findOne({ _id: dataId, userId });
-    if (!data) {
-      throw new NotFoundException(`Data with ID ${dataId} not found`);
-    }
-    return data;
-  }
-
   private validateSchemaStructure(schemaData: any): void {
     if (!schemaData) {
       throw new BadRequestException('Schema data is required');
@@ -152,12 +108,7 @@ export class CustomSchemaService {
     }
   }
 
-  public validateDataAgainstSchema(data: any, schema: CustomSchemaDocument): void {
-    // Verificar se data é undefined
-    if (!data) {
-      throw new BadRequestException('Data is required');
-    }
-
+  private validateDataAgainstSchema(data: any, schema: CustomSchemaDocument): void {
     // Implementar validação dos dados contra o schema
     // Esta é uma implementação básica que pode ser expandida
     for (const field of schema.fields) {
@@ -181,10 +132,6 @@ export class CustomSchemaService {
           throw new BadRequestException(`Field ${field.name} must be a boolean`);
         }
 
-        if (field.type === 'date' && !(value instanceof Date) && isNaN(Date.parse(value))) {
-          throw new BadRequestException(`Field ${field.name} must be a valid date`);
-        }
-
         if (field.type === 'object' && typeof value !== 'object') {
           throw new BadRequestException(`Field ${field.name} must be an object`);
         }
@@ -198,11 +145,6 @@ export class CustomSchemaService {
           if (field.options.max !== undefined && value > field.options.max) {
             throw new BadRequestException(`Field ${field.name} must be at most ${field.options.max}`);
           }
-        }
-
-        // Validar enum
-        if (field.options?.enum && !field.options.enum.includes(value)) {
-          throw new BadRequestException(`Field ${field.name} must be one of: ${field.options.enum.join(', ')}`);
         }
 
         // Validar subfields recursivamente
@@ -231,4 +173,4 @@ export class CustomSchemaService {
       }
     }
   }
-} 
+}

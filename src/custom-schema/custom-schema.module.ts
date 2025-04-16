@@ -5,6 +5,10 @@ import { CustomSchema, CustomSchemaSchema } from '../database/schemas/custom-sch
 import { CustomData, CustomDataSchema } from '../database/schemas/custom-data.schema';
 import { CustomSchemaController } from './custom-schema.controller';
 import { CustomSchemaService } from './custom-schema.service';
+import { CreateDataController } from './use-cases/create-data/create-data.controller';
+import { CreateSchemaController } from './use-cases/create-schema/create-schema.controller';
+import { CreateDataService } from './use-cases/create-data/create-data.service';
+import { CreateSchemaService } from './use-cases/create-schema/create-schema.service';
 
 @Module({
   imports: [
@@ -13,8 +17,8 @@ import { CustomSchemaService } from './custom-schema.service';
       { name: CustomData.name, schema: CustomDataSchema }
     ])
   ],
-  controllers: [CustomSchemaController],
-  providers: [CustomSchemaService],
+  controllers: [CustomSchemaController, CreateDataController, CreateSchemaController],
+  providers: [CustomSchemaService, CreateDataService, CreateSchemaService],
   exports: [CustomSchemaService]
 })
 export class CustomSchemaModule { } 
