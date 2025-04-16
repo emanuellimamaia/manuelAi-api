@@ -9,6 +9,8 @@ import { CreateDataController } from './use-cases/create-data/create-data.contro
 import { CreateSchemaController } from './use-cases/create-schema/create-schema.controller';
 import { CreateDataService } from './use-cases/create-data/create-data.service';
 import { CreateSchemaService } from './use-cases/create-schema/create-schema.service';
+import { GetAllSchemaController } from './use-cases/getAll-schema/getAll.controller';
+import { GetAllSchemaService } from './use-cases/getAll-schema/getAll.service';
 
 @Module({
   imports: [
@@ -17,8 +19,8 @@ import { CreateSchemaService } from './use-cases/create-schema/create-schema.ser
       { name: CustomData.name, schema: CustomDataSchema }
     ])
   ],
-  controllers: [CustomSchemaController, CreateDataController, CreateSchemaController],
-  providers: [CustomSchemaService, CreateDataService, CreateSchemaService],
+  controllers: [CustomSchemaController, CreateDataController, CreateSchemaController, GetAllSchemaController],
+  providers: [CustomSchemaService, CreateDataService, CreateSchemaService, GetAllSchemaService],
   exports: [CustomSchemaService]
 })
 export class CustomSchemaModule { } 

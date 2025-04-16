@@ -17,22 +17,7 @@ export class CustomSchemaController {
 
 
 
-  @Get()
-  @ApiOperation({ summary: 'Get all schemas for the authenticated user' })
-  @ApiResponse({ status: 200, description: 'Returns all schemas' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  async getAllSchemas(@Req() req: Request) {
-    try {
-      const userId = req.user['_id'];
-      this.logger.debug('Getting all schemas');
-      const schemas = await this.customSchemaService.getUserSchemas(userId);
-      this.logger.debug(`Found ${schemas.length} schemas`);
-      return schemas;
-    } catch (error) {
-      this.logger.error(`Error getting schemas: ${error.message}`);
-      throw error;
-    }
-  }
+
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a schema by ID' })
