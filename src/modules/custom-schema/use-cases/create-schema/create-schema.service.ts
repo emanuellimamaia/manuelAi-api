@@ -1,46 +1,38 @@
-import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CustomData, CustomDataDocument } from '../../../database/schemas/custom-data.schema';
-import { CustomSchemaService } from '../../../custom-schema/custom-schema.service';
-import { CustomSchemaDocument } from 'src/database/schemas';
+import { CustomSchema, CustomSchemaDocument } from 'src/modules/database/schemas';
 
 @Injectable()
-export class CreateDataService {
-  private readonly logger = new Logger(CreateDataService.name);
+export class CreateSchemaService {
+  private readonly logger = new Logger(CreateSchemaService.name);
 
   constructor(
-    @InjectModel(CustomData.name) private customDataModel: Model<CustomDataDocument>,
-    private readonly customSchemaService: CustomSchemaService
+    @InjectModel(CustomSchema.name) private customSchemaModel: Model<CustomSchemaDocument>
   ) { }
 
-  async createData(schemaId: string, userId: string, data: any): Promise<CustomDataDocument> {
+  async createSchema(userId: string, schemaData: any): Promise<CustomSchemaDocument> {
     try {
-      // Buscar o schema
-      const schema = await this.customSchemaService.getSchemaById(schemaId);
+      this.logger.debug(`Creating schema for user ${userId}: ${JSON.stringify(schemaData)}`);
 
-      // Verificar se data.data é undefined
-      if (!data.data) {
-        throw new BadRequestException('Data is required');
-      }
+      // Validate schema structure
+      this.validateSchemaStructure(schemaData);
 
-      // Validar os dados contra o schema
-      this.customSchemaService.validateDataAgainstSchema(data.data, schema);
-
-      // Criar os dados
-      const customData = await this.customDataModel.create({
+      // Create schema
+      const schema = await this.customSchemaModel.create({
         userId,
-        schemaId,
-        name: data.name || 'Sem nome',
-        data: data.data
+        name: schemaData.name,
+        fields: schemaData.fields
       });
 
-      return customData;
+      this.logger.debug(`Schema created successfully: ${schema._id}`);
+      return schema;
     } catch (error) {
-      this.logger.error(`Error creating data: ${error.message}`);
+      this.logger.error(`Error creating schema: ${error.message}`);
       throw error;
     }
   }
+
   private validateSchemaStructure(schemaData: any): void {
     if (!schemaData) {
       throw new BadRequestException('Schema data is required');
@@ -94,7 +86,7 @@ export class CreateDataService {
           throw new BadRequestException('Subfields must be an array');
         }
 
-        // Validar recursivamente os subfields
+        // Validate subfields recursively
         for (const subfield of field.subfields) {
           if (!subfield.name || typeof subfield.name !== 'string') {
             throw new BadRequestException('Each subfield must have a valid name');

@@ -1,8 +1,6 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Logger, Req } from '@nestjs/common';
 import { CustomSchemaService } from './custom-schema.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CreateSchemaDto } from './dto/create-schema.dto';
-import { CreateDataDto } from './dto/create-data.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Request } from 'express';
 
@@ -14,27 +12,6 @@ export class CustomSchemaController {
   private readonly logger = new Logger(CustomSchemaController.name);
 
   constructor(private readonly customSchemaService: CustomSchemaService) { }
-
-
-
-
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a schema by ID' })
-  @ApiResponse({ status: 200, description: 'Returns the schema' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @ApiResponse({ status: 404, description: 'Schema not found' })
-  async getSchemaById(@Param('id') id: string) {
-    try {
-      this.logger.debug(`Getting schema with ID: ${id}`);
-      const schema = await this.customSchemaService.getSchemaById(id);
-      this.logger.debug(`Found schema: ${schema._id}`);
-      return schema;
-    } catch (error) {
-      this.logger.error(`Error getting schema: ${error.message}`);
-      throw error;
-    }
-  }
 
 
 

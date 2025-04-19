@@ -1,6 +1,6 @@
 import { Controller, Get, Injectable, Logger, Req, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { JwtAuthGuard } from "src/modules/auth/guards/jwt-auth.guard";
 import { GetAllSchemaService } from "./getAll.service";
 import { Request } from 'express';
 
@@ -13,10 +13,8 @@ export class GetAllSchemaController {
 
   constructor(private readonly getAllSchemaService: GetAllSchemaService) { }
 
-  @Get()
+  @Get("get-schemas")
   @ApiOperation({ summary: 'Get all schemas for the authenticated user' })
-  @ApiResponse({ status: 200, description: 'Returns all schemas' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async getAllSchemas(@Req() req: Request) {
     try {
       const userId = req.user['_id'];

@@ -1,9 +1,10 @@
 import { Controller, Post, Body, Param, UseGuards, Logger, Req } from '@nestjs/common';
-import { CreateDataService } from './create-data.service';
+
 import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
-import { CreateDataDto } from '../../dto/create-data.dto';
+import { CreateDataDto } from '../../../custom-schema/dto/create-data.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { Request } from 'express';
+import { CreateDataService } from './create-data.service';
 
 @ApiTags('Data')
 @Controller('create-data')

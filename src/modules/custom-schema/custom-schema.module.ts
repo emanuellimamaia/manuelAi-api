@@ -1,16 +1,14 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { CustomSchema, CustomSchemaSchema } from '../database/schemas/custom-schema.schema';
-import { CustomData, CustomDataSchema } from '../database/schemas/custom-data.schema';
 import { CustomSchemaController } from './custom-schema.controller';
 import { CustomSchemaService } from './custom-schema.service';
-import { CreateDataController } from './use-cases/create-data/create-data.controller';
 import { CreateSchemaController } from './use-cases/create-schema/create-schema.controller';
-import { CreateDataService } from './use-cases/create-data/create-data.service';
 import { CreateSchemaService } from './use-cases/create-schema/create-schema.service';
 import { GetAllSchemaController } from './use-cases/getAll-schema/getAll.controller';
 import { GetAllSchemaService } from './use-cases/getAll-schema/getAll.service';
+import { CustomData, CustomDataSchema, CustomSchema, CustomSchemaSchema } from '../database/schemas';
+import { GetSchemaService } from './use-cases/get-schema/get-schema.service';
+import { GetSchemaController } from './use-cases/get-schema/get-schema.controller';
 
 @Module({
   imports: [
@@ -19,8 +17,8 @@ import { GetAllSchemaService } from './use-cases/getAll-schema/getAll.service';
       { name: CustomData.name, schema: CustomDataSchema }
     ])
   ],
-  controllers: [CustomSchemaController, CreateDataController, CreateSchemaController, GetAllSchemaController],
-  providers: [CustomSchemaService, CreateDataService, CreateSchemaService, GetAllSchemaService],
+  controllers: [CustomSchemaController, CreateSchemaController, GetAllSchemaController, GetSchemaController],
+  providers: [CustomSchemaService, CreateSchemaService, GetAllSchemaService, GetSchemaService],
   exports: [CustomSchemaService]
 })
 export class CustomSchemaModule { } 

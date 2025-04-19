@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CustomSchema, CustomSchemaDocument } from '../database/schemas/custom-schema.schema';
-import { CustomData, CustomDataDocument } from '../database/schemas/custom-data.schema';
+import { CustomData, CustomDataDocument, CustomSchema, CustomSchemaDocument } from '../database/schemas';
+
 
 @Injectable()
 export class CustomSchemaService {

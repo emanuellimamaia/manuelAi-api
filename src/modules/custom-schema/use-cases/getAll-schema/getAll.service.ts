@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { CustomData, CustomDataDocument } from "src/database/schemas/custom-data.schema";
+import { CustomData, CustomDataDocument } from "src/modules/database/schemas/custom-data.schema";
 
 @Injectable()
 export class GetAllSchemaService {
